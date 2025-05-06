@@ -1,71 +1,60 @@
 import 'dart:convert';
-
 import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:my_project/data/models/word.dart';
 
 class HiveService {
   static const String _wordsBoxName = 'wordsBox';
+  static const String _configBoxName = 'configBox';
+  static const String _dataLoadedKey = 'isDataLoaded';
 
-  // Box для работы
-  static Box<Word>? _box;
+  static Box<Word>? _wordsBox;
+  static Box? _configBox;
 
-  // Инициализация Hive и загрузка данных из JSON, если коробка пуста
   static Future<void> init() async {
-    if (_box == null) {
-      _box = await Hive.openBox<Word>(_wordsBoxName); // Открываем коробку
-    }
+    // Открываем обе коробки
+    _wordsBox ??= await Hive.openBox<Word>(_wordsBoxName);
+    _configBox ??= await Hive.openBox(_configBoxName);
 
-    // Если коробка пуста, загружаем данные из JSON
-    if (_box!.isEmpty) {
+    // Проверяем, были ли уже загружены начальные данные
+    final isDataLoaded = _configBox!.get(_dataLoadedKey, defaultValue: false);
+
+    if (!isDataLoaded && _wordsBox!.isEmpty) {
       await _loadInitialData();
+      await _configBox!.put(_dataLoadedKey, true); // Устанавливаем флаг
     }
   }
 
-  // Загружаем начальные данные из JSON
   static Future<void> _loadInitialData() async {
-    final jsonString = await _loadJsonFromAssets('assets/word.json'); // Чтение JSON из assets
-    
-    // Парсим JSON в список
+    final jsonString = await rootBundle.loadString('assets/word.json');
     final List<dynamic> jsonData = json.decode(jsonString);
-    
-    // Преобразуем в объекты Word
     final words = jsonData.map((data) => Word.fromJson(data)).toList();
-    
-    // Сохраняем данные в Hive
     await saveWords(words);
   }
 
-  // Загружаем JSON из assets
-  static Future<String> _loadJsonFromAssets(String path) async {
-    return await rootBundle.loadString(path); // Чтение файла из assets
-  }
-
-  // Добавление нового слова в коробку
   static Future<void> addWord(Word word) async {
-    if (_box == null) await init(); // Инициализация коробки, если она еще не была открыта
-    await _box!.add(word);
+    await init();
+    await _wordsBox!.add(word);
   }
 
-  // Сохранение списка слов в коробку
   static Future<void> saveWords(List<Word> words) async {
-    if (_box == null) await init(); // Инициализация коробки, если она еще не была открыта
-    await _box!.clear(); // Очищаем коробку перед сохранением новых данных
+    await init();
+    await _wordsBox!.clear();
     for (var word in words) {
-      await _box!.add(word);
+      await _wordsBox!.add(word);
     }
   }
 
-  // Получение всех слов из коробки
   static List<Word> getWords() {
-    if (_box == null) {
+    if (_wordsBox == null) {
       throw HiveError('Box not opened');
     }
-    return _box!.values.toList(); // Возвращаем список всех слов
+    return _wordsBox!.values.toList();
   }
 
-  // Закрытие Hive
   static Future<void> close() async {
     await Hive.close();
+    _wordsBox = null;
+    _configBox = null;
   }
 }
