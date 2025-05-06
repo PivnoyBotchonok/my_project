@@ -28,6 +28,4 @@ class HiveService {
   static Future<void> close() async {
     await Hive.close();
   }
-
-
 }
