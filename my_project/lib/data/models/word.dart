@@ -13,22 +13,17 @@ class Word {
   @HiveField(2)
   final String ru;
   
-  @HiveField(3)
-  final String tr;
-
   Word({
     required this.id,
     required this.en,
     required this.ru,
-    required this.tr,
   });
-  factory Word.empty() => Word(id: 0, en: '', tr: '', ru: '');
+  factory Word.empty() => Word(id: 0, en: '', ru: '');
   factory Word.fromJson(Map<String, dynamic> json) {
     return Word(
       id: json['id'],
       en: json['en'],
       ru: json['ru'],
-      tr: json['tr'],
     );
   }
 }

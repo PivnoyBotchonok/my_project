@@ -68,8 +68,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
               final newWord = Word(
                 id: DateTime.now().millisecondsSinceEpoch, // Генерируем уникальный ID
                 en: _enController.text,
-                ru: _ruController.text,
-                tr: '', // Пустая строка, так как tr не используется
+                ru: _ruController.text,// Пустая строка, так как tr не используется
               );
               Navigator.of(context).pop(newWord);
             }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/data/repositories/word_repo.dart';
 
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
@@ -50,5 +51,10 @@ class _MainMenuScreenState extends State<MainMenuScreen> {
         ),
       ),
     );
+  }
+   @override
+  void dispose() {
+    HiveService.close();  // Закрытие Hive, когда приложение завершает свою работу
+    super.dispose();
   }
 }

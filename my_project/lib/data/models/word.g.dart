@@ -20,22 +20,19 @@ class WordAdapter extends TypeAdapter<Word> {
       id: (fields[0] as num).toInt(),
       en: fields[1] as String,
       ru: fields[2] as String,
-      tr: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Word obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.en)
       ..writeByte(2)
-      ..write(obj.ru)
-      ..writeByte(3)
-      ..write(obj.tr);
+      ..write(obj.ru);
   }
 
   @override

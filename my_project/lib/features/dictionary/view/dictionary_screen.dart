@@ -24,7 +24,6 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   Future<void> _initializeApp() async {
-    await HiveService.init();
     await _initializeTts();
     await _loadWords();
   }
@@ -64,14 +63,6 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       delegate: WordSearchDelegate(words: _words),
     );
   }
-
-  @override
-  void dispose() {
-    _tts.stop();
-    HiveService.close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
