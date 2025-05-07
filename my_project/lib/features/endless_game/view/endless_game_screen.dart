@@ -44,6 +44,13 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
     }
   }
 
+  void _toggleLanguage() {
+    setState(() {
+      _controller.toggleLanguage(); // Сменить режим (язык)
+      _selectedIndex = null;  // Сбрасываем выбранный индекс
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -51,18 +58,30 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Бесконечный режим')),
+      appBar: AppBar(
+        title: const Text('Бесконечный режим'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.language),
+            onPressed: _toggleLanguage,  // Сменить режим игры
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Показываем русское или английское слово в зависимости от режима
                 Text(
-                  _controller.currentWord.ru,
+                  _controller.isRussianMode
+                      ? _controller.currentWord.ru
+                      : _controller.currentWord.en,
                   style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 150),
+                // Генерируем кнопки с вариантами ответов
                 ...List.generate(_controller.options.length, (i) {
                   final color = _getColorForIndex(i);
                   return Column(
