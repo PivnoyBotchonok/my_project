@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:my_project/data/models/word.dart';
-import 'package:my_project/data/repositories/word_repo.dart';
 import 'package:my_project/features/add_word/add_word.dart';
+import 'package:my_project/features/dictionary/logic/dictionary_controller.dart';
 import 'package:my_project/features/dictionary/widgets/word_item.dart';
 import 'package:my_project/features/dictionary/widgets/word_search.dart';
 
@@ -12,29 +11,23 @@ class DictionaryScreen extends StatefulWidget {
 }
 
 class _DictionaryScreenState extends State<DictionaryScreen> {
-  late final FlutterTts _tts;
+  final DictionaryController _controller = DictionaryController();
   List<Word> _words = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _tts = FlutterTts();
-    _initializeApp();
+    _initialize();
   }
 
-  Future<void> _initializeApp() async {
-    await _initializeTts();
+  Future<void> _initialize() async {
+    await _controller.initTts();
     await _loadWords();
   }
 
-  Future<void> _initializeTts() async {
-    await _tts.setVoice({"name": "Karen", "locale": "en-AU"});
-    await _tts.setSpeechRate(0.5);
-  }
-
   Future<void> _loadWords() async {
-    final words = HiveService.getWords();
+    final words = await _controller.loadWords();
     setState(() {
       _words = words;
       _isLoading = false;
@@ -48,13 +41,9 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
     );
 
     if (result != null && result is Word) {
-      await HiveService.addWord(result);
+      await _controller.addWord(result);
       await _loadWords();
     }
-  }
-
-  Future<void> _speak(String text) async {
-    await _tts.speak(text);
   }
 
   void _showSearch() {
@@ -63,6 +52,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       delegate: WordSearchDelegate(words: _words),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +87,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       itemCount: _words.length,
       itemBuilder: (context, index) => WordItem(
         word: _words[index],
-        onSpeak: () => _speak(_words[index].en),
+        onSpeak: () => _controller.speak(_words[index].en),
       ),
     );
   }
