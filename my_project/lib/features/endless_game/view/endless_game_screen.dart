@@ -84,6 +84,8 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
                       ? _controller!.currentWord.ru
                       : _controller!.currentWord.en,
                   style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                  softWrap: true,
                 ),
                 const SizedBox(height: 150),
                 ...List.generate(_controller!.options.length, (i) {
