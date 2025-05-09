@@ -11,6 +11,6 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(WordAdapter());
   // Открываем box
-  await HiveService.init();
+  await HiveService.getWords();
   runApp(const MyProject());
 }

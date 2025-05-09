@@ -12,7 +12,7 @@ class EndlessGameScreen extends StatefulWidget {
 }
 
 class _EndlessGameScreenState extends State<EndlessGameScreen> {
-  late GameController _controller;
+  GameController? _controller;
   bool _isLoading = true;
   int? _selectedIndex;
 
@@ -22,22 +22,26 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
     _loadWords();
   }
 
-  void _loadWords() {
-    final words = HiveService.getWords();
+  Future<void> _loadWords() async {
+    final words = await HiveService.getWords();
     if (words.isEmpty) return;
-    _controller = GameController(words);
 
-    setState(() => _isLoading = false);
+    setState(() {
+      _controller = GameController(words);
+      _isLoading = false;
+    });
   }
 
   void _handleTap(int index) {
-    final correct = _controller.handleAnswer(index);
+    if (_controller == null) return;
+
+    final correct = _controller!.handleAnswer(index);
     setState(() => _selectedIndex = index);
 
     if (correct) {
       Future.delayed(const Duration(milliseconds: 500), () {
         setState(() {
-          _controller.nextQuestion();
+          _controller!.nextQuestion();
           _selectedIndex = null;
         });
       });
@@ -45,15 +49,17 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   }
 
   void _toggleLanguage() {
+    if (_controller == null) return;
+
     setState(() {
-      _controller.toggleLanguage(); // Сменить режим (язык)
-      _selectedIndex = null;  // Сбрасываем выбранный индекс
+      _controller!.toggleLanguage();
+      _selectedIndex = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    if (_isLoading || _controller == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -62,8 +68,8 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
         title: const Text('Бесконечный режим'),
         actions: [
           IconButton(
-            icon: Icon(Icons.language),
-            onPressed: _toggleLanguage,  // Сменить режим игры
+            icon: const Icon(Icons.language),
+            onPressed: _toggleLanguage,
           ),
         ],
       ),
@@ -73,21 +79,19 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Показываем русское или английское слово в зависимости от режима
                 Text(
-                  _controller.isRussianMode
-                      ? _controller.currentWord.ru
-                      : _controller.currentWord.en,
+                  _controller!.isRussianMode
+                      ? _controller!.currentWord.ru
+                      : _controller!.currentWord.en,
                   style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 150),
-                // Генерируем кнопки с вариантами ответов
-                ...List.generate(_controller.options.length, (i) {
+                ...List.generate(_controller!.options.length, (i) {
                   final color = _getColorForIndex(i);
                   return Column(
                     children: [
                       OptionButton(
-                        text: _controller.options[i],
+                        text: _controller!.options[i],
                         color: color,
                         onPressed: () => _handleTap(i),
                       ),
@@ -101,7 +105,7 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
           Positioned(
             left: 20,
             bottom: 50,
-            child: ScoreBadge(score: _controller.score),
+            child: ScoreBadge(score: _controller!.score),
           ),
         ],
       ),
@@ -109,9 +113,9 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   }
 
   Color _getColorForIndex(int index) {
-    if (_selectedIndex == null) return Colors.white;
-    if (index == _controller.correctOptionIndex && index == _selectedIndex) return Colors.green;
-    if (_controller.wrongAttempts.contains(index)) return Colors.red;
+    if (_controller == null || _selectedIndex == null) return Colors.white;
+    if (index == _controller!.correctOptionIndex && index == _selectedIndex) return Colors.green;
+    if (_controller!.wrongAttempts.contains(index)) return Colors.red;
     return Colors.white;
   }
 }
