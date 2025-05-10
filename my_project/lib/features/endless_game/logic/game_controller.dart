@@ -20,14 +20,18 @@ class GameController {
     currentWord = _words[_random.nextInt(_words.length)];
 
     // В зависимости от текущего режима генерируем правильные варианты ответов
-    final Set<String> optionsSet = {isRussianMode ? currentWord.en : currentWord.ru};
+    final Set<String> optionsSet = {
+      isRussianMode ? currentWord.en : currentWord.ru,
+    };
     while (optionsSet.length < 3) {
       final randomWord = _words[_random.nextInt(_words.length)];
       optionsSet.add(isRussianMode ? randomWord.en : randomWord.ru);
     }
 
     options = optionsSet.toList()..shuffle();
-    correctOptionIndex = options.indexOf(isRussianMode ? currentWord.en : currentWord.ru);
+    correctOptionIndex = options.indexOf(
+      isRussianMode ? currentWord.en : currentWord.ru,
+    );
     wrongAttempts.clear();
   }
 
@@ -41,7 +45,6 @@ class GameController {
       return false;
     }
   }
-
   void nextQuestion() {
     _generateNewWord();
   }
@@ -49,7 +52,7 @@ class GameController {
   // Метод для смены языка (смена режима)
   void toggleLanguage() {
     isRussianMode = !isRussianMode;
-    score = 0;  // Сбрасываем счет при смене режима
-    _generateNewWord();  // Генерируем новый вопрос
+    score = 0; // Сбрасываем счет при смене режима
+    _generateNewWord(); // Генерируем новый вопрос
   }
 }

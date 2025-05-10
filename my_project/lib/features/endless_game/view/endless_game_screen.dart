@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/data/models/score/score.dart';
+import 'package:my_project/data/repositories/score/score_repo.dart';
 import 'package:my_project/data/repositories/word_repo.dart';
 import 'package:my_project/features/endless_game/logic/game_controller.dart';
 import 'package:my_project/features/endless_game/widgets/option_button.dart';
@@ -15,14 +17,18 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   GameController? _controller;
   bool _isLoading = true;
   int? _selectedIndex;
+  late ScoreRepository _scoreRepository;
+  
 
   @override
   void initState() {
+    _scoreRepository = ScoreRepository();
     super.initState();
     _loadWords();
   }
 
   Future<void> _loadWords() async {
+    await _scoreRepository.init(); 
     final words = await HiveService.getWords();
     if (words.isEmpty) return;
 
@@ -33,20 +39,35 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   }
 
   void _handleTap(int index) {
-    if (_controller == null) return;
+  if (_controller == null) return;
 
-    final correct = _controller!.handleAnswer(index);
-    setState(() => _selectedIndex = index);
+  int currentScoreBeforeAnswer = _controller!.score;
+  final correct = _controller!.handleAnswer(index);
+  setState(() => _selectedIndex = index);
 
-    if (correct) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        setState(() {
-          _controller!.nextQuestion();
-          _selectedIndex = null;
-        });
+  if (correct) {
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        _controller!.nextQuestion();
+        _selectedIndex = null;
       });
-    }
+    });
+  } else {
+    _saveBestScore(currentScoreBeforeAnswer); // Сохраняем перед сбросом
   }
+}
+Future<void> _saveBestScore(int score) async {
+  final currentBest = await _scoreRepository.getBestScore();
+  int currentEndlessBest = currentBest?.score_endless_game ?? 0;
+  
+  if (score > currentEndlessBest) {
+    final newScore = Score(
+      score_endless_game: score,
+      score_crossword_game: currentBest?.score_crossword_game ?? 0,
+    );
+    await _scoreRepository.saveScore(newScore);
+  }
+}
 
   void _toggleLanguage() {
     if (_controller == null) return;
@@ -56,6 +77,14 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
       _selectedIndex = null;
     });
   }
+
+  @override
+void dispose() {
+  if (_controller != null) {
+    _saveBestScore(_controller!.score); // Сохраняем текущий счет
+  }
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {

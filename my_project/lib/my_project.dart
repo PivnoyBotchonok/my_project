@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_project/main.dart';
 import 'package:my_project/routes/routes.dart';
 
 class MyProject extends StatefulWidget {
@@ -12,6 +13,7 @@ class _MyProjectState extends State<MyProject> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [routeObserver],
       title: "MyProject",
       routes: routes,
       theme: ThemeData(

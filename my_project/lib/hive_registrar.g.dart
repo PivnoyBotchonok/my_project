@@ -3,10 +3,12 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
+import 'package:my_project/data/models/score/score.dart';
 import 'package:my_project/data/models/word.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(ScoreAdapter());
     registerAdapter(WordAdapter());
   }
 }

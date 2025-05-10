@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 class ScoreBadge extends StatelessWidget {
   final int score;
+  final Color? color;
 
-  const ScoreBadge({super.key, required this.score});
+  const ScoreBadge({super.key, required this.score, this.color});
 
   @override
   Widget build(BuildContext context) {
+    final Color backgroundColor = color ?? Colors.amber;
+    final Color iconColor = color == Colors.green ? Colors.green[800]! : Colors.yellow;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.amber,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: const [
           BoxShadow(
@@ -22,7 +26,7 @@ class ScoreBadge extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.star, color: Colors.yellow),
+          Icon(Icons.star, color: iconColor),
           const SizedBox(width: 8),
           Text(
             '$score',
