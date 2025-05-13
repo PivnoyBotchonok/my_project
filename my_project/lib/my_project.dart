@@ -16,6 +16,7 @@ class _MyProjectState extends State<MyProject> {
       navigatorObservers: [routeObserver],
       title: "MyProject",
       routes: routes,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: TextButton.styleFrom(

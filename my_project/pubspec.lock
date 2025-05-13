@@ -153,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  crossword_generator:
+    dependency: "direct main"
+    description:
+      name: crossword_generator
+      sha256: e1f79d0b07dc561cc133d05ffd7995c6a6ce27b9c66e3e4707f3862f5f93b6b7
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   crypto:
     dependency: transitive
     description:
