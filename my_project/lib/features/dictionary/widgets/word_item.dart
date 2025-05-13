@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_project/data/models/word.dart';
+import 'package:my_project/data/models/word/word.dart';
 
 class WordItem extends StatelessWidget {
   final Word word;

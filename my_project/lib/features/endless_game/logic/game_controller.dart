@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:my_project/data/models/word.dart';
+import 'package:my_project/data/models/word/word.dart';
 
 class GameController {
   final List<Word> _words;

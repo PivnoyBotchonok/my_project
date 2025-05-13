@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:my_project/data/models/score/score.dart';
-import 'package:my_project/data/models/word.dart';
-import 'package:my_project/data/repositories/word_repo.dart';
+import 'package:my_project/data/models/word/word.dart';
+import 'package:my_project/data/repositories/word/word_repo.dart';
 import 'package:my_project/my_project.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();

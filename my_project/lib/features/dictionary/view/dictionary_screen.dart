@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_project/data/models/word.dart';
+import 'package:my_project/data/models/word/word.dart';
 import 'package:my_project/features/add_word/add_word.dart';
 import 'package:my_project/features/dictionary/logic/dictionary_controller.dart';
 import 'package:my_project/features/dictionary/widgets/word_item.dart';

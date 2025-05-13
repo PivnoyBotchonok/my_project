@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_project/data/models/score/score.dart';
 import 'package:my_project/data/repositories/score/score_repo.dart';
-import 'package:my_project/data/repositories/word_repo.dart';
+import 'package:my_project/data/repositories/word/word_repo.dart';
 import 'package:my_project/features/endless_game/logic/game_controller.dart';
 import 'package:my_project/features/endless_game/widgets/option_button.dart';
 import 'package:my_project/features/endless_game/widgets/score_badge.dart';

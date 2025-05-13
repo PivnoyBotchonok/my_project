@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:path_provider/path_provider.dart';
-import '../models/word.dart';
+import '../../models/word/word.dart';
 
 class HiveService {
   static const String _wordsBoxName = 'wordsBox';

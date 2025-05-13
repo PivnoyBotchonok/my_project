@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:my_project/data/models/word.dart';
+import 'package:my_project/data/models/word/word.dart';
 import 'package:my_project/features/dictionary/widgets/word_item.dart';
 
 class WordSearchDelegate extends SearchDelegate<Word> {

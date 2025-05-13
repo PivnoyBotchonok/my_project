@@ -1,6 +1,6 @@
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:my_project/data/models/word.dart';
-import 'package:my_project/data/repositories/word_repo.dart';
+import 'package:my_project/data/models/word/word.dart';
+import 'package:my_project/data/repositories/word/word_repo.dart';
 
 class DictionaryController {
   final FlutterTts _tts = FlutterTts();
