@@ -1,8 +1,9 @@
-import 'package:crossword_generator/crossword_generator.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';// Импорт кастомного виджета
+import 'package:flutter/material.dart';
 import 'package:my_project/data/models/word/word.dart';
+import 'package:my_project/data/repositories/score/score_repo.dart';
 import 'package:my_project/data/repositories/word/word_repo.dart';
+import 'package:my_project/libs/crossword_generator.dart';
 
 class CrosswordScreen extends StatefulWidget {
   const CrosswordScreen({super.key});
@@ -17,10 +18,13 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
   bool _isLoading = false;
   String? _error;
   Function? _revealCurrentCellLetter;
+  final ScoreRepository _scoreRepository = ScoreRepository();
+  String _highlightedWordDescription = ''; // Добавь, если хочешь видеть панель
 
   @override
   void initState() {
     super.initState();
+    _scoreRepository.init();
   }
 
   Future<void> _loadWords() async {
@@ -62,82 +66,43 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
         .toList();
   }
 
-  Widget _buildCrossword() {
-    if (_crosswordData == null) return const SizedBox();
-
-    return InteractiveViewer(
-      panEnabled: true,
-      boundaryMargin: const EdgeInsets.all(80),
-      minScale: 0.5,
-      maxScale: 2.5,
-      child: CrosswordWidget( // Используй свой кастомный виджет здесь
-        words: _crosswordData!,
-        style: CrosswordStyle(
-          currentCellColor: const Color.fromARGB(255, 84, 255, 129),
-          wordHighlightColor: const Color.fromARGB(255, 200, 255, 200),
-          wordCompleteColor: const Color.fromARGB(255, 255, 249, 196),
-          cellTextStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-          descriptionButtonStyle: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            minimumSize: const Size(50, 50),
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            textStyle: const TextStyle(fontSize: 25),
-          ),
-          cellBuilder: (context, cell, isSelected, isHighlighted, isCompleted) {
-            return Container(
-              width: 30,
-              height: 30,
-              alignment: Alignment.center,
-              margin: const EdgeInsets.all(1),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                color:
-                    isCompleted
-                        ? const Color.fromARGB(255, 255, 249, 196)
-                        : isSelected
-                        ? const Color.fromARGB(255, 84, 255, 129)
-                        : isHighlighted
-                        ? const Color.fromARGB(255, 200, 255, 200)
-                        : Colors.white,
-              ),
-              child: Text(
-                cell.toUpperCase(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            );
-          },
-        ),
-        onRevealCurrentCellLetter: (revealCurrentCellLetter) {
-          _revealCurrentCellLetter = revealCurrentCellLetter;
-        },
-        onCrosswordCompleted: () {
-          showDialog(
-            context: context,
-            builder:
-                (context) => AlertDialog(
-                  title: const Text('Поздравляем!'),
-                  content: const Text('Вы успешно завершили кроссворд!'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
-          );
-        },
-      ),
-    );
-  }
+  final CrosswordStyle _style = CrosswordStyle(
+    currentCellColor: const Color.fromARGB(255, 84, 255, 129),
+    wordHighlightColor: const Color.fromARGB(255, 200, 255, 200),
+    wordCompleteColor: const Color.fromARGB(255, 255, 249, 196),
+    cellTextStyle: const TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+    ),
+    descriptionButtonStyle: ElevatedButton.styleFrom(
+      backgroundColor: Colors.blue,
+      minimumSize: const Size(50, 50),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      textStyle: const TextStyle(fontSize: 25),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_error != null) {
+      return Scaffold(body: Center(child: Text(_error!)));
+    }
+
+    if (_words.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: ElevatedButton(
+            onPressed: _loadWords,
+            child: const Text('Сгенерировать кроссворд'),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Кроссворд"),
@@ -151,19 +116,45 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
           ],
         ],
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-              ? Center(child: Text(_error!))
-              : _words.isEmpty
-              ? Center(
-                child: ElevatedButton(
-                  onPressed: _loadWords,
-                  child: const Text('Сгенерировать кроссворд'),
-                ),
+      body: InteractiveViewer(
+        panEnabled: true,
+        boundaryMargin: const EdgeInsets.all(80),
+        minScale: 0.5,
+        maxScale: 2.5,
+        child: CrosswordWidget(
+          words: _crosswordData!,
+          style: _style,
+          onRevealCurrentCellLetter: (revealFn) {
+            _revealCurrentCellLetter = revealFn;
+          },
+          onCrosswordCompleted: () {
+            
+            showDialog(
+              context: context,
+              builder:
+                  (context) => AlertDialog(
+                    title: const Text('Поздравляем!'),
+                    content: const Text('Вы успешно завершили кроссворд!'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+            );
+          },
+        ),
+      ),
+      bottomNavigationBar:
+          _highlightedWordDescription.isNotEmpty
+              ? CrosswordNavigationBar(
+                description: _highlightedWordDescription,
+                onPrevious: () {},
+                onNext: () {},
+                style: _style,
               )
-              : _buildCrossword(),
+              : null,
     );
   }
 }
