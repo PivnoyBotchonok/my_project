@@ -37,9 +37,9 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   Future<void> _handleAddWord() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AddWordDialog()),
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AddWordDialog(),
     );
 
     if (result != null && result is Word) {
@@ -49,10 +49,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
   }
 
   void _showSearch() {
-    showSearch(
-      context: context,
-      delegate: WordSearchDelegate(words: _words),
-    );
+    showSearch(context: context, delegate: WordSearchDelegate(words: _words));
   }
 
   @override
@@ -61,10 +58,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       appBar: AppBar(
         title: const Text('Словарь'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _showSearch,
-          ),
+          IconButton(icon: const Icon(Icons.search), onPressed: _showSearch),
         ],
       ),
       body: _buildContent(),
@@ -87,10 +81,11 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
 
     return ListView.builder(
       itemCount: _words.length,
-      itemBuilder: (context, index) => WordItem(
-        word: _words[index],
-        onSpeak: () => _controller.speak(_words[index].en),
-      ),
+      itemBuilder:
+          (context, index) => WordItem(
+            word: _words[index],
+            onSpeak: () => _controller.speak(_words[index].en),
+          ),
     );
   }
 }
