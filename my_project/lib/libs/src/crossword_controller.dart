@@ -7,7 +7,7 @@ class CrosswordNavigationBar extends StatelessWidget {
   final VoidCallback onNext;
   final CrosswordStyle style;
 
-  const CrosswordNavigationBar({
+  const CrosswordNavigationBar({super.key, 
     required this.description,
     required this.onPrevious,
     required this.onNext,
@@ -25,8 +25,8 @@ class CrosswordNavigationBar extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: onPrevious,
-              child: Icon(Icons.chevron_left),
               style: style.descriptionButtonStyle,
+              child: Icon(Icons.chevron_left),
             ),
             Expanded(
               child: Column(
@@ -55,8 +55,8 @@ class CrosswordNavigationBar extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: onNext,
-              child: Icon(Icons.chevron_right),
               style: style.descriptionButtonStyle,
+              child: Icon(Icons.chevron_right),
             ),
           ],
         ),

@@ -6,10 +6,10 @@ class WordItem extends StatelessWidget {
   final VoidCallback onSpeak;
 
   const WordItem({
-    Key? key,
+    super.key,
     required this.word,
     required this.onSpeak,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

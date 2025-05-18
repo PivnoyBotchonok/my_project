@@ -19,7 +19,7 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
   String? _error;
   Function? _revealCurrentCellLetter;
   final ScoreRepository _scoreRepository = ScoreRepository();
-  String _highlightedWordDescription = ''; // Добавь, если хочешь видеть панель
+  final String _highlightedWordDescription = '';
 
   @override
   void initState() {

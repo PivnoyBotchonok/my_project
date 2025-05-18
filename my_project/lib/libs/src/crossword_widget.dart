@@ -546,30 +546,6 @@ class _CrosswordWidgetState extends State<CrosswordWidget> {
       });
     }
   }
-
-  int _getWordLength(int row, int col, bool isHorizontal) {
-    for (var word in _words) {
-      if (word['orientation'] == (isHorizontal ? 'across' : 'down')) {
-        int startY = word['starty'] - 1;
-        int startX = word['startx'] - 1;
-        if (isHorizontal) {
-          if (startY == row &&
-              startX <= col &&
-              startX + word['answer'].length > col) {
-            return word['answer'].length;
-          }
-        } else {
-          if (startX == col &&
-              startY <= row &&
-              startY + word['answer'].length > row) {
-            return word['answer'].length;
-          }
-        }
-      }
-    }
-    return 0;
-  }
-
   bool _isWordComplete() {
     for (var word in _words) {
       if (word['orientation'] == (_isHorizontal ? 'across' : 'down')) {

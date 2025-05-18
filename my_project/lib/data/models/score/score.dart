@@ -1,6 +1,6 @@
 import 'package:hive_ce/hive.dart';
 
-part 'score.g.dart'; // Файл будет сгенерирован
+part 'score.g.dart';
 
 @HiveType(typeId: 1)
 class Score {

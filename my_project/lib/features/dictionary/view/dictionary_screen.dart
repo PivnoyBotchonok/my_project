@@ -6,6 +6,8 @@ import 'package:my_project/features/dictionary/widgets/word_item.dart';
 import 'package:my_project/features/dictionary/widgets/word_search.dart';
 
 class DictionaryScreen extends StatefulWidget {
+  const DictionaryScreen({super.key});
+
   @override
   _DictionaryScreenState createState() => _DictionaryScreenState();
 }
@@ -68,8 +70,8 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
       body: _buildContent(),
       floatingActionButton: FloatingActionButton(
         onPressed: _handleAddWord,
-        child: const Icon(Icons.add),
         tooltip: 'Добавить новое слово',
+        child: const Icon(Icons.add),
       ),
     );
   }

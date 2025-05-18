@@ -57,7 +57,7 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   }
 }
 Future<void> _saveBestScore(int score) async {
-  final currentBest = await _scoreRepository.getBestScore();
+  final currentBest = _scoreRepository.getBestScore();
   int currentEndlessBest = currentBest?.score_endless_game ?? 0;
   
   if (score > currentEndlessBest) {

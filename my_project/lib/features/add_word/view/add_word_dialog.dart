@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:my_project/data/models/word/word.dart';
 
 class AddWordDialog extends StatefulWidget {
+  const AddWordDialog({super.key});
+
   @override
   _AddWordDialogState createState() => _AddWordDialogState();
 }
