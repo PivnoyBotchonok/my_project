@@ -59,11 +59,17 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
   }
 
   static List<Map<String, String>> _prepareCrosswordData(List<Word> words) {
-    return words
-        .map(
-          (word) => {'answer': word.en.toLowerCase(), 'description': word.ru},
-        )
-        .toList();
+    return words.map((word) {
+      // Берем первые 3 слова из описания
+      final wordsList = word.ru.split(' ');
+      final shortDescription = wordsList.take(3).join(' ');
+      final dots = wordsList.length > 3 ? '...' : '';
+
+      return {
+        'answer': word.en.toLowerCase(),
+        'description': '$shortDescription$dots',
+      };
+    }).toList();
   }
 
   final CrosswordStyle _style = CrosswordStyle(
@@ -78,7 +84,11 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
       backgroundColor: Colors.blue,
       minimumSize: const Size(50, 50),
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      textStyle: const TextStyle(fontSize: 25),
+      textStyle: const TextStyle(
+        fontSize: 20, // Уменьшаем размер шрифта
+        overflow: TextOverflow.visible,
+      ),
+      alignment: Alignment.center, // Выравнивание по центру
     ),
   );
 
@@ -94,6 +104,7 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
 
     if (_words.isEmpty) {
       return Scaffold(
+        appBar: AppBar(title: Text('Генерация кроссворда')),
         body: Center(
           child: ElevatedButton(
             onPressed: _loadWords,
@@ -127,22 +138,33 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
           onRevealCurrentCellLetter: (revealFn) {
             _revealCurrentCellLetter = revealFn;
           },
-          onCrosswordCompleted: () {
-            
-            showDialog(
-              context: context,
-              builder:
-                  (context) => AlertDialog(
-                    title: const Text('Поздравляем!'),
-                    content: const Text('Вы успешно завершили кроссворд!'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('OK'),
+          onCrosswordCompleted: () async {
+            // Добавьте async
+            try {
+              await _scoreRepository.incrementCrosswordScore();
+              if (mounted) {
+                showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text('Поздравляем!'),
+                        content: const Text('Вы успешно завершили кроссворд!'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-            );
+                );
+              }
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Ошибка: ${e.toString()}')),
+                );
+              }
+            }
           },
         ),
       ),

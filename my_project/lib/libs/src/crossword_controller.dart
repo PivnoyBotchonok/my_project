@@ -33,14 +33,6 @@ class CrosswordNavigationBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Current clue:',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
                     description,
                     textAlign: TextAlign.center,
                     style: TextStyle(

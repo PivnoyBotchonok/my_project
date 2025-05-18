@@ -17,8 +17,8 @@ class ScoreAdapter extends TypeAdapter<Score> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return Score(
-      score_endless_game: (fields[0] as num).toInt(),
-      score_crossword_game: (fields[1] as num).toInt(),
+      scoreEndlessGame: (fields[0] as num).toInt(),
+      scoreCrosswordGame: (fields[1] as num).toInt(),
     );
   }
 
@@ -27,9 +27,9 @@ class ScoreAdapter extends TypeAdapter<Score> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.score_endless_game)
+      ..write(obj.scoreEndlessGame)
       ..writeByte(1)
-      ..write(obj.score_crossword_game);
+      ..write(obj.scoreCrosswordGame);
   }
 
   @override

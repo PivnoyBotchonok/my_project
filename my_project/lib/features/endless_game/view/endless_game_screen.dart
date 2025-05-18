@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_project/data/models/score/score.dart';
 import 'package:my_project/data/repositories/score/score_repo.dart';
 import 'package:my_project/data/repositories/word/word_repo.dart';
 import 'package:my_project/features/endless_game/logic/game_controller.dart';
@@ -18,7 +17,6 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   bool _isLoading = true;
   int? _selectedIndex;
   late ScoreRepository _scoreRepository;
-  
 
   @override
   void initState() {
@@ -28,7 +26,7 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
   }
 
   Future<void> _loadWords() async {
-    await _scoreRepository.init(); 
+    await _scoreRepository.init();
     final words = await HiveService.getWords();
     if (words.isEmpty) return;
 
@@ -38,36 +36,25 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
     });
   }
 
-  void _handleTap(int index) {
-  if (_controller == null) return;
+  void _handleTap(int index) async {
+    if (_controller == null) return;
 
-  int currentScoreBeforeAnswer = _controller!.score;
-  final correct = _controller!.handleAnswer(index);
-  setState(() => _selectedIndex = index);
+    int currentScoreBeforeAnswer = _controller!.score;
+    final correct = _controller!.handleAnswer(index);
+    setState(() => _selectedIndex = index);
 
-  if (correct) {
-    Future.delayed(const Duration(milliseconds: 500), () {
-      setState(() {
-        _controller!.nextQuestion();
-        _selectedIndex = null;
+    if (correct) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (!mounted) return;
+        setState(() {
+          _controller!.nextQuestion();
+          _selectedIndex = null;
+        });
       });
-    });
-  } else {
-    _saveBestScore(currentScoreBeforeAnswer); // Сохраняем перед сбросом
+    } else {
+      await _scoreRepository.updateEndlessScore(currentScoreBeforeAnswer);
+    }
   }
-}
-Future<void> _saveBestScore(int score) async {
-  final currentBest = _scoreRepository.getBestScore();
-  int currentEndlessBest = currentBest?.score_endless_game ?? 0;
-  
-  if (score > currentEndlessBest) {
-    final newScore = Score(
-      score_endless_game: score,
-      score_crossword_game: currentBest?.score_crossword_game ?? 0,
-    );
-    await _scoreRepository.saveScore(newScore);
-  }
-}
 
   void _toggleLanguage() {
     if (_controller == null) return;
@@ -79,12 +66,11 @@ Future<void> _saveBestScore(int score) async {
   }
 
   @override
-void dispose() {
-  if (_controller != null) {
-    _saveBestScore(_controller!.score); // Сохраняем текущий счет
+  void dispose() {
+    final currentScore = _controller?.score ?? 0;
+    _scoreRepository.updateEndlessScore(currentScore);
+    super.dispose();
   }
-  super.dispose();
-}
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +87,14 @@ void dispose() {
             onPressed: _toggleLanguage,
           ),
         ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            final score = _controller?.score ?? 0;
+            _scoreRepository.updateEndlessScore(score);
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Stack(
         children: [
@@ -112,7 +106,10 @@ void dispose() {
                   _controller!.isRussianMode
                       ? _controller!.currentWord.ru
                       : _controller!.currentWord.en,
-                  style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                   softWrap: true,
                 ),
@@ -145,7 +142,8 @@ void dispose() {
 
   Color _getColorForIndex(int index) {
     if (_controller == null || _selectedIndex == null) return Colors.white;
-    if (index == _controller!.correctOptionIndex && index == _selectedIndex) return Colors.green;
+    if (index == _controller!.correctOptionIndex && index == _selectedIndex)
+      return Colors.green;
     if (_controller!.wrongAttempts.contains(index)) return Colors.red;
     return Colors.white;
   }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_project/data/repositories/score/score_repo.dart';
-import 'package:my_project/features/endless_game/endless_game.dart';
 import 'package:my_project/features/endless_game/widgets/score_badge.dart';
-import 'package:my_project/main.dart';
 
 class MainMenuScreen extends StatefulWidget {
   const MainMenuScreen({super.key});
@@ -11,55 +9,34 @@ class MainMenuScreen extends StatefulWidget {
   State<MainMenuScreen> createState() => _MainMenuScreenState();
 }
 
-class _MainMenuScreenState extends State<MainMenuScreen> with RouteAware {
+class _MainMenuScreenState extends State<MainMenuScreen> {
   final ScoreRepository _scoreRepository = ScoreRepository();
   int _endlessScore = 0;
   int _crosswordScore = 0;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final route = ModalRoute.of(context);
-    if (route is PageRoute) {
-      routeObserver.subscribe(this, route);
-    }
-  }
-
-  @override
-  void dispose() {
-    routeObserver.unsubscribe(this);
-    super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    // Вызывается при возврате на этот экран
-    _loadBestScore();
-  }
-
-  @override
   void initState() {
     super.initState();
-    _loadBestScore();
+    _initScores();
   }
 
-  Future<void> _loadBestScore() async {
+  Future<void> _initScores() async {
     await _scoreRepository.init();
-    final score = _scoreRepository.getBestScore();
+    _loadScore();
+  }
+
+  Future<void> _loadScore() async {
+    final score = _scoreRepository.getScore();
     if (mounted) {
       setState(() {
-        _endlessScore = score?.score_endless_game ?? 0;
-        _crosswordScore = score?.score_crossword_game ?? 0;
+        _endlessScore = score.scoreEndlessGame;
+        _crosswordScore = score.scoreCrosswordGame;
       });
     }
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _loadBestScore();
-    });
     return Scaffold(
       appBar: AppBar(title: const Text('Выберите режим')),
       body: Center(
@@ -75,14 +52,8 @@ class _MainMenuScreenState extends State<MainMenuScreen> with RouteAware {
                     textStyle: TextStyle(fontSize: 25),
                   ),
                   onPressed: () async {
-                    // Используем push вместо pushNamed и ожидаем результат
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EndlessGameScreen(),
-                      ),
-                    );
-                    _loadBestScore(); // Обновляем данные после возврата
+                    await Navigator.of(context).pushNamed("/endless_game");
+                    _loadScore();
                   },
                   child: const Text('Бесконечный режим'),
                 ),
@@ -98,8 +69,9 @@ class _MainMenuScreenState extends State<MainMenuScreen> with RouteAware {
                   style: ElevatedButton.styleFrom(
                     textStyle: TextStyle(fontSize: 25),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed("/crossword");
+                  onPressed: () async {
+                    await Navigator.of(context).pushNamed("/crossword");
+                    _loadScore();
                   },
                   child: const Text('Кроссворд'),
                 ),
@@ -120,7 +92,7 @@ class _MainMenuScreenState extends State<MainMenuScreen> with RouteAware {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () async {
-                await _scoreRepository.clearScore();
+                await _scoreRepository.scoreClear();
                 setState(() {
                   _endlessScore = 0;
                   _crosswordScore = 0;

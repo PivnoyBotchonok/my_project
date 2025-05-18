@@ -2,42 +2,68 @@ import 'package:hive_ce/hive.dart';
 import 'package:my_project/data/models/score/score.dart';
 
 class ScoreRepository {
-  static const _boxName = 'scoreBox';
-  static const _bestScoreKey = 'best_score';
+  late Box<Score> _scoreBox;
+  
+  static const String _boxName = 'scores';
+  static String get boxName => _boxName;
+  static const int _defaultKey = 0;
 
   Future<void> init() async {
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(ScoreAdapter());
     }
-    await Hive.openBox<Score>(_boxName);
-  }
-
-  Future<void> saveScore(Score newScore) async {
-    final box = Hive.box<Score>(_boxName);
-    final currentScore = getBestScore();
-
-    final updatedScore = _mergeScores(currentScore, newScore);
-    await box.put(_bestScoreKey, updatedScore);
-  }
-
-  Score _mergeScores(Score? current, Score newScore) {
-    if (current == null) return newScore;
+    _scoreBox = await Hive.openBox<Score>(_boxName);
     
-    return Score(
-      score_endless_game: _getMax(current.score_endless_game, newScore.score_endless_game),
-      score_crossword_game: _getMax(current.score_crossword_game, newScore.score_crossword_game),
+    // Инициализация дефолтных значений при первом запуске
+    if (!_scoreBox.containsKey(_defaultKey)) {
+      await _scoreBox.put(
+        _defaultKey,
+        Score(
+          scoreEndlessGame: 0,
+          scoreCrosswordGame: 0,
+        ),
+      );
+    }
+  }
+
+  // Получение текущего счета
+  Score getScore() {
+    return _scoreBox.get(_defaultKey)!;
+  }
+
+  // Обновление лучшего результата для Endless Game
+  Future<void> updateEndlessScore(int newScore) async {
+    final currentScore = getScore();
+    if (newScore > currentScore.scoreEndlessGame) {
+      await _scoreBox.put(
+        _defaultKey,
+        currentScore.copyWith(scoreEndlessGame: newScore),
+      );
+    }
+  }
+
+  // Увеличение счетчика Crossword Game
+  Future<void> incrementCrosswordScore() async {
+    final currentScore = getScore();
+    await _scoreBox.put(
+      _defaultKey,
+      currentScore.copyWith(
+        scoreCrosswordGame: currentScore.scoreCrosswordGame + 1,
+      ),
     );
   }
 
-  int _getMax(int a, int b) => a > b ? a : b;
+Future<void> scoreClear() async {
+  await _scoreBox.put(
+    _defaultKey,
+    Score(
+      scoreEndlessGame: 0,
+      scoreCrosswordGame: 0,
+    ),
+  );
+}
 
-  Score? getBestScore() {
-    final box = Hive.box<Score>(_boxName);
-    return box.get(_bestScoreKey);
-  }
-
-  Future<void> clearScore() async {
-    final box = Hive.box<Score>(_boxName);
-    await box.delete(_bestScoreKey);
+  Future<void> close() async {
+    await _scoreBox.close();
   }
 }
