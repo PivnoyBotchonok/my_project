@@ -34,7 +34,7 @@ class _CrosswordScreenState extends State<CrosswordScreen> {
     });
 
     try {
-      final words = await HiveService.getWords();
+      final words = await WordRepository.getWords();
       final randomWords = await compute(_getRandomWords, words);
       final crosswordData = await compute(_prepareCrosswordData, randomWords);
 

@@ -27,7 +27,7 @@ class _EndlessGameScreenState extends State<EndlessGameScreen> {
 
   Future<void> _loadWords() async {
     await _scoreRepository.init();
-    final words = await HiveService.getWords();
+    final words = await WordRepository.getWords();
     if (words.isEmpty) return;
 
     setState(() {

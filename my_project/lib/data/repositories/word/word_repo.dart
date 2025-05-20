@@ -4,7 +4,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../models/word/word.dart';
 
-class HiveService {
+class WordRepository {
   static const String _wordsBoxName = 'wordsBox';
   static const String _configBoxName = 'configBox';
   static const String _dataLoadedKey = 'isDataLoaded';

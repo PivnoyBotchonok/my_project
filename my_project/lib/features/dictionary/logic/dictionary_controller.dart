@@ -14,10 +14,10 @@ class DictionaryController {
   }
 
   Future<List<Word>> loadWords() async {
-    return HiveService.getWords();
+    return WordRepository.getWords();
   }
 
   Future<void> addWord(Word word) async {
-    await HiveService.addWord(word);
+    await WordRepository.addWord(word);
   }
 }

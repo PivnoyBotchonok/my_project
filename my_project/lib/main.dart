@@ -14,6 +14,6 @@ void main() async {
   Hive.registerAdapter(WordAdapter());
   Hive.registerAdapter(ScoreAdapter());
   // Открываем box
-  await HiveService.getWords();
+  await WordRepository.getWords();
   runApp(const MyProject());
 }
