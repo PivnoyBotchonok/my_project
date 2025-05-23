@@ -17,10 +17,8 @@ class CrosswordScreen extends StatelessWidget {
       color: Colors.black,
     ),
     descriptionButtonStyle: ElevatedButton.styleFrom(
-      //backgroundColor: Colors.blue,
       minimumSize: const Size(50, 50),
       padding: const EdgeInsets.symmetric(horizontal: 8),
-      textStyle: const TextStyle(fontSize: 20, overflow: TextOverflow.visible),
       alignment: Alignment.center,
     ),
   );

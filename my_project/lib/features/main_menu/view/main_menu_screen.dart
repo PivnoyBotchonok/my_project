@@ -25,12 +25,16 @@ class MainMenuScreen extends StatelessWidget {
               icon: Icon(
                 // Определяем иконку в зависимости от текущей темы
                 Theme.of(context).brightness == Brightness.dark
-                    ? Icons.wb_sunny // Иконка для темной темы
+                    ? Icons
+                        .wb_sunny // Иконка для темной темы
                     : Icons.nightlight_round, // Иконка для светлой темы
               ),
               onPressed: () {
                 // Переключаем тему через ThemeNotifier
-                final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+                final themeNotifier = Provider.of<ThemeNotifier>(
+                  context,
+                  listen: false,
+                );
                 themeNotifier.toggleTheme();
               },
             ),
@@ -55,7 +59,9 @@ class MainMenuScreen extends StatelessWidget {
                           textStyle: const TextStyle(fontSize: 25),
                         ),
                         onPressed: () async {
-                          await Navigator.of(context).pushNamed("/endless_game");
+                          await Navigator.of(
+                            context,
+                          ).pushNamed("/endless_game");
                           context.read<ScoreBloc>().add(LoadScores());
                         },
                         child: const Text('Бесконечный режим'),

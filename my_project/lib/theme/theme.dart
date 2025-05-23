@@ -6,6 +6,7 @@ class AppTheme {
 
   static Color errorColor(Brightness brightness) =>
       brightness == Brightness.dark ? Colors.redAccent : Colors.red;
+
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: Colors.white,
@@ -17,8 +18,11 @@ class AppTheme {
       centerTitle: true,
     ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.black),
-      bodyMedium: TextStyle(color: Colors.black),
+      bodyLarge: TextStyle(color: Colors.black, fontSize: 18),
+      bodyMedium: TextStyle(color: Colors.black, fontSize: 18),
+      titleLarge: TextStyle(color: Colors.black, fontSize: 18),
+      titleMedium: TextStyle(color: Colors.black, fontSize: 18),
+      labelLarge: TextStyle(color: Colors.black, fontSize: 18),
     ),
   );
 
@@ -33,8 +37,11 @@ class AppTheme {
       centerTitle: true,
     ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.orangeAccent),
-      bodyMedium: TextStyle(color: Colors.orangeAccent),
+      bodyLarge: TextStyle(color: Colors.orangeAccent, fontSize: 18),
+      bodyMedium: TextStyle(color: Colors.orangeAccent, fontSize: 18),
+      titleLarge: TextStyle(color: Colors.orangeAccent, fontSize: 18),
+      titleMedium: TextStyle(color: Colors.orangeAccent, fontSize: 18),
+      labelLarge: TextStyle(color: Colors.orangeAccent, fontSize: 18),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

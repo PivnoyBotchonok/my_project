@@ -31,7 +31,6 @@ class ScoreBadge extends StatelessWidget {
           Text(
             '$score',
             style: const TextStyle(
-              fontSize: 18,
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),
