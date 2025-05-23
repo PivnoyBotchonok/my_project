@@ -18,8 +18,6 @@ class OptionButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        foregroundColor: Colors.black,
-        minimumSize: const Size(200, 50),
       ),
       child: Text(text),
     );

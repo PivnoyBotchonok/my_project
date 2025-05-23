@@ -1,150 +1,136 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_project/data/models/word/word.dart';
 import 'package:my_project/data/repositories/score/score_repo.dart';
 import 'package:my_project/data/repositories/word/word_repo.dart';
-import 'package:my_project/features/endless_game/logic/game_controller.dart';
+import 'package:my_project/features/endless_game/bloc/bloc/game_bloc.dart';
 import 'package:my_project/features/endless_game/widgets/option_button.dart';
-import 'package:my_project/features/endless_game/widgets/score_badge.dart';
+import 'package:my_project/features/score/widget/score_badge.dart';
+import 'package:my_project/theme/theme.dart';
 
-class EndlessGameScreen extends StatefulWidget {
+class EndlessGameScreen extends StatelessWidget {
   const EndlessGameScreen({super.key});
 
   @override
-  State<EndlessGameScreen> createState() => _EndlessGameScreenState();
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Word>>(
+      future: context.read<WordRepository>().getWords(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        return BlocProvider(
+          create:
+              (context) => GameBloc(
+                words: snapshot.data!,
+                scoreRepository: context.read<ScoreRepository>(),
+              )..add(GameInit()),
+          child: const _GameView(),
+        );
+      },
+    );
+  }
 }
 
-class _EndlessGameScreenState extends State<EndlessGameScreen> {
-  GameController? _controller;
-  bool _isLoading = true;
-  int? _selectedIndex;
-  late ScoreRepository _scoreRepository;
-
-  @override
-  void initState() {
-    _scoreRepository = ScoreRepository();
-    super.initState();
-    _loadWords();
-  }
-
-  Future<void> _loadWords() async {
-    await _scoreRepository.init();
-    final words = await WordRepository.getWords();
-    if (words.isEmpty) return;
-
-    setState(() {
-      _controller = GameController(words);
-      _isLoading = false;
-    });
-  }
-
-  void _handleTap(int index) async {
-    if (_controller == null) return;
-
-    int currentScoreBeforeAnswer = _controller!.score;
-    final correct = _controller!.handleAnswer(index);
-    setState(() => _selectedIndex = index);
-
-    if (correct) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (!mounted) return;
-        setState(() {
-          _controller!.nextQuestion();
-          _selectedIndex = null;
-        });
-      });
-    } else {
-      await _scoreRepository.updateEndlessScore(currentScoreBeforeAnswer);
-    }
-  }
-
-  void _toggleLanguage() {
-    if (_controller == null) return;
-
-    setState(() {
-      _controller!.toggleLanguage();
-      _selectedIndex = null;
-    });
-  }
-
-  @override
-  void dispose() {
-    final currentScore = _controller?.score ?? 0;
-    _scoreRepository.updateEndlessScore(currentScore);
-    super.dispose();
-  }
+class _GameView extends StatelessWidget {
+  const _GameView();
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading || _controller == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Бесконечный режим'),
         actions: [
           IconButton(
             icon: const Icon(Icons.language),
-            onPressed: _toggleLanguage,
+            onPressed: () => context.read<GameBloc>().add(LanguageToggled()),
           ),
         ],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            final score = _controller?.score ?? 0;
-            _scoreRepository.updateEndlessScore(score);
+            final score =
+                context.read<GameBloc>().state is GameLoaded
+                    ? (context.read<GameBloc>().state as GameLoaded).score
+                    : 0;
+            context.read<ScoreRepository>().updateEndlessScore(score);
             Navigator.pop(context);
           },
         ),
       ),
-      body: Stack(
-        children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: BlocBuilder<GameBloc, GameState>(
+        builder: (context, state) {
+          if (state is GameLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is GameLoaded) {
+            return Stack(
               children: [
-                Text(
-                  _controller!.isRussianMode
-                      ? _controller!.currentWord.ru
-                      : _controller!.currentWord.en,
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                ),
-                const SizedBox(height: 150),
-                ...List.generate(_controller!.options.length, (i) {
-                  final color = _getColorForIndex(i);
-                  return Column(
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      OptionButton(
-                        text: _controller!.options[i],
-                        color: color,
-                        onPressed: () => _handleTap(i),
+                      Text(
+                        state.isRussianMode
+                            ? state.currentWord.ru
+                            : state.currentWord.en,
+                        style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 150),
+                      ...List.generate(state.options.length, (i) {
+                        final color = _getColorForIndex(context, i, state);
+                        return Column(
+                          children: [
+                            OptionButton(
+                              text: state.options[i],
+                              color: color,
+                              onPressed:
+                                  () => context.read<GameBloc>().add(
+                                    AnswerSelected(i),
+                                  ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        );
+                      }),
                     ],
-                  );
-                }),
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  bottom: 50,
+                  child: ScoreBadge(score: state.score),
+                ),
               ],
-            ),
-          ),
-          Positioned(
-            left: 20,
-            bottom: 50,
-            child: ScoreBadge(score: _controller!.score),
-          ),
-        ],
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
 
-  Color _getColorForIndex(int index) {
-    if (_controller == null || _selectedIndex == null) return Colors.white;
-    if (index == _controller!.correctOptionIndex && index == _selectedIndex)
-      return Colors.green;
-    if (_controller!.wrongAttempts.contains(index)) return Colors.red;
-    return Colors.white;
+  Color _getColorForIndex(BuildContext context, int index, GameLoaded state) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+
+    final baseColor =
+        theme.elevatedButtonTheme.style?.backgroundColor?.resolve({}) ??
+        (brightness == Brightness.dark ? Colors.grey[850]! : Colors.white);
+
+    final correctColor = AppTheme.successColor(brightness);
+    final wrongColor = AppTheme.errorColor(brightness);
+
+    if (state.selectedIndex == null) return baseColor;
+    if (index == state.correctOptionIndex && index == state.selectedIndex)
+      return correctColor;
+    if (state.wrongAttempts.contains(index)) return wrongColor;
+    return baseColor;
   }
 }

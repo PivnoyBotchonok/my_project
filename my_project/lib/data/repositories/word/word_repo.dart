@@ -10,11 +10,13 @@ class WordRepository {
   static const String _dataLoadedKey = 'isDataLoaded';
   static const String _jsonPath = 'assets/word.json';
 
-  static Box<Word>? _wordsBox;
-  static Box? _configBox;
+  Box<Word>? _wordsBox;
+  Box? _configBox;
 
-  static Future<void> _initHive() async {
-    if (Hive.isBoxOpen(_wordsBoxName) && Hive.isBoxOpen(_configBoxName)) return;
+  List<Word> get words => _wordsBox?.values.toList() ?? [];
+
+  Future<void> initHive() async {
+    if (Hive.isBoxOpen(_wordsBoxName)) return;
 
     final dir = await getApplicationDocumentsDirectory();
     Hive.init(dir.path);
@@ -23,8 +25,8 @@ class WordRepository {
       Hive.registerAdapter(WordAdapter());
     }
 
-    _wordsBox ??= await Hive.openBox<Word>(_wordsBoxName);
-    _configBox ??= await Hive.openBox(_configBoxName);
+    _wordsBox = await Hive.openBox<Word>(_wordsBoxName);
+    _configBox = await Hive.openBox(_configBoxName);
 
     final isDataLoaded = _configBox!.get(_dataLoadedKey, defaultValue: false);
     if (!isDataLoaded || _wordsBox!.isEmpty) {
@@ -33,7 +35,7 @@ class WordRepository {
     }
   }
 
-  static Future<void> _loadInitialData() async {
+  Future<void> _loadInitialData() async {
     try {
       final jsonString = await rootBundle.loadString(_jsonPath);
       final List<dynamic> jsonList = json.decode(jsonString);
@@ -48,25 +50,24 @@ class WordRepository {
     }
   }
 
-  static Future<void> addWord(Word word) async {
-    await _initHive();
+  Future<void> addWord(Word word) async {
+    await initHive();
     await _wordsBox!.put(word.id, word);
   }
 
-  static Future<void> saveWords(List<Word> words) async {
-    await _initHive();
+  Future<void> saveWords(List<Word> words) async {
+    await initHive();
     await _wordsBox!.clear();
     await _wordsBox!.putAll({for (var word in words) word.id: word});
   }
 
-  static Future<List<Word>> getWords() async {
-    await _initHive();
+  Future<List<Word>> getWords() async {
+    await initHive();
     return _wordsBox!.values.toList();
   }
 
-  static Future<void> close() async {
-    await Hive.close();
-    _wordsBox = null;
-    _configBox = null;
+  Future<void> close() async {
+    await _wordsBox?.close();
+    await _configBox?.close();
   }
 }

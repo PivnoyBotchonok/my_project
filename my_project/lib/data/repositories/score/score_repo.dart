@@ -33,6 +33,7 @@ class ScoreRepository {
 
   // Обновление лучшего результата для Endless Game
   Future<void> updateEndlessScore(int newScore) async {
+    await init();
     final currentScore = getScore();
     if (newScore > currentScore.scoreEndlessGame) {
       await _scoreBox.put(

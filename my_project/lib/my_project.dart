@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:my_project/main.dart';
+import 'package:provider/provider.dart';
+import 'package:my_project/theme/theme_notifier.dart';
 import 'package:my_project/routes/routes.dart';
+import 'package:my_project/theme/theme.dart';
 
-class MyProject extends StatefulWidget {
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
+
+class MyProject extends StatelessWidget {
   const MyProject({super.key});
 
   @override
-  State<MyProject> createState() => _MyProjectState();
-}
-
-class _MyProjectState extends State<MyProject> {
-  @override
   Widget build(BuildContext context) {
+    // Получаем текущий ThemeMode из ThemeNotifier
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+
     return MaterialApp(
-      navigatorObservers: [routeObserver],
+      navigatorObservers: [routeObserver], // Теперь routeObserver правильно объявлен
       title: "MyProject",
       routes: routes,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: TextButton.styleFrom(
-            minimumSize: const Size(200, 50),
-            padding: const EdgeInsets.all(20),
-            textStyle: TextStyle(fontSize: 20),
-          ),
-        ),
-        appBarTheme: AppBarTheme(centerTitle: true),
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeNotifier.themeMode, // Используем состояние из ThemeNotifier
     );
   }
 }
