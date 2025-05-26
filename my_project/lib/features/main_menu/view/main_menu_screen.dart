@@ -23,14 +23,11 @@ class MainMenuScreen extends StatelessWidget {
           actions: [
             IconButton(
               icon: Icon(
-                // Определяем иконку в зависимости от текущей темы
                 Theme.of(context).brightness == Brightness.dark
-                    ? Icons
-                        .wb_sunny // Иконка для темной темы
-                    : Icons.nightlight_round, // Иконка для светлой темы
+                    ? Icons.wb_sunny
+                    : Icons.nightlight_round,
               ),
               onPressed: () {
-                // Переключаем тему через ThemeNotifier
                 final themeNotifier = Provider.of<ThemeNotifier>(
                   context,
                   listen: false,
@@ -49,70 +46,76 @@ class MainMenuScreen extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 25),
-                        ),
-                        onPressed: () async {
-                          await Navigator.of(
-                            context,
-                          ).pushNamed("/endless_game");
-                          context.read<ScoreBloc>().add(LoadScores());
-                        },
-                        child: const Text('Бесконечный режим'),
-                      ),
-                      const SizedBox(width: 10),
-                      ScoreBadge(score: state.endlessScore),
-                    ],
+                  _buildMenuButton(
+                    context: context,
+                    label: 'Бесконечный \nрежим',
+                    onPressed: () async {
+                      await Navigator.of(context).pushNamed("/endless_game");
+                      context.read<ScoreBloc>().add(LoadScores());
+                    },
+                    badge: ScoreBadge(score: state.endlessScore),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 25),
-                        ),
-                        onPressed: () async {
-                          await Navigator.of(context).pushNamed("/crossword");
-                          context.read<ScoreBloc>().add(LoadScores());
-                        },
-                        child: const Text('Кроссворд'),
-                      ),
-                      const SizedBox(width: 10),
-                      ScoreBadge(
-                        score: state.crosswordScore,
-                        color: Colors.green,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 25),
+                  _buildMenuButton(
+                    context: context,
+                    label: 'Кроссворд',
+                    onPressed: () async {
+                      await Navigator.of(context).pushNamed("/crossword");
+                      context.read<ScoreBloc>().add(LoadScores());
+                    },
+                    badge: ScoreBadge(
+                      score: state.crosswordScore,
+                      color: Colors.green,
                     ),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildMenuButton(
+                    context: context,
+                    label: 'Словарь',
                     onPressed: () {
                       Navigator.of(context).pushNamed("/dictionary");
                     },
-                    child: const Text('Словарь'),
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
+                  _buildMenuButton(
+                    context: context,
+                    label: 'Сброс результатов',
                     onPressed: () {
                       context.read<ScoreBloc>().add(ResetScores());
                     },
-                    child: const Text("Сброс результатов"),
                   ),
                 ],
               ),
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildMenuButton({
+    required BuildContext context,
+    required String label,
+    required VoidCallback onPressed,
+    Widget? badge,
+  }) {
+    return SizedBox(
+      width: 360,
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 25),
+                minimumSize: const Size(0, 60),
+              ),
+              onPressed: onPressed,
+              child: Text(label, textAlign: TextAlign.center),
+            ),
+          ),
+          if (badge != null) ...[const SizedBox(width: 10), badge],
+        ],
       ),
     );
   }
