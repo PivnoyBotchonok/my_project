@@ -68,12 +68,19 @@ class CrosswordScreen extends StatelessWidget {
                 title: const Text("Кроссворд"),
                 actions: [
                   IconButton(
+                    icon: const Icon(Icons.language),
+                    onPressed:
+                        () => context.read<CrosswordBloc>().add(LanguageToggled()),
+                  ),
+                  IconButton(
                     icon: const Icon(Icons.help),
                     onPressed: () => _revealCurrentCellLetter?.call(),
                   ),
                   IconButton(
                     icon: const Icon(Icons.refresh),
-                    onPressed: () => context.read<CrosswordBloc>().add(LoadCrossword()),
+                    onPressed:
+                        () =>
+                            context.read<CrosswordBloc>().add(LoadCrossword()),
                   ),
                 ],
               ),
@@ -94,16 +101,19 @@ class CrosswordScreen extends StatelessWidget {
                       if (context.mounted) {
                         showDialog(
                           context: context,
-                          builder: (_) => AlertDialog(
-                            title: const Text('Поздравляем!'),
-                            content: const Text('Вы успешно завершили кроссворд!'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('OK'),
+                          builder:
+                              (_) => AlertDialog(
+                                title: const Text('Поздравляем!'),
+                                content: const Text(
+                                  'Вы успешно завершили кроссворд!',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                         );
                       }
                     } catch (e) {
@@ -116,14 +126,15 @@ class CrosswordScreen extends StatelessWidget {
                   },
                 ),
               ),
-              bottomNavigationBar: _highlightedWordDescription.isNotEmpty
-                  ? CrosswordNavigationBar(
-                      description: _highlightedWordDescription,
-                      onPrevious: () {},
-                      onNext: () {},
-                      style: _style,
-                    )
-                  : null,
+              bottomNavigationBar:
+                  _highlightedWordDescription.isNotEmpty
+                      ? CrosswordNavigationBar(
+                        description: _highlightedWordDescription,
+                        onPrevious: () {},
+                        onNext: () {},
+                        style: _style,
+                      )
+                      : null,
             );
           }
 

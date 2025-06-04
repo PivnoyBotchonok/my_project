@@ -52,7 +52,7 @@ class WordRepository {
 
   Future<void> addWord(Word word) async {
     await initHive();
-    await _wordsBox!.put(word.id, word);
+    await _wordsBox!.add(word);
   }
 
   Future<void> saveWords(List<Word> words) async {

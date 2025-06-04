@@ -68,7 +68,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               final newWord = Word(
-                id: DateTime.now().millisecondsSinceEpoch, // Генерируем уникальный ID
+                id: 0, // Генерируем уникальный ID
                 en: _enController.text,
                 ru: _ruController.text,
               );

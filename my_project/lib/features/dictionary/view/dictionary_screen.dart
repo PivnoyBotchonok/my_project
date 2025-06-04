@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:my_project/data/models/word/word.dart';
-import 'package:my_project/data/repositories/word/word_repo.dart';
 import 'package:my_project/features/add_word/add_word.dart';
 import 'package:my_project/features/dictionary/bloc/dictionary_bloc.dart';
 import 'package:my_project/features/dictionary/bloc/dictionary_event.dart';
@@ -17,67 +16,63 @@ class DictionaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wordRepo = context.read<WordRepository>();
-
-    return BlocProvider(
-      create: (_) => DictionaryBloc(wordRepository: wordRepo)..add(LoadWords()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Словарь'),
-          actions: [
-            BlocBuilder<DictionaryBloc, DictionaryState>(
-              builder: (context, state) {
-                if (state is DictionaryLoaded) {
-                  return IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      showSearch(
-                        context: context,
-                        delegate: WordSearchDelegate(words: state.words),
-                      );
-                    },
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
-        body: BlocBuilder<DictionaryBloc, DictionaryState>(
-          builder: (context, state) {
-            if (state is DictionaryLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is DictionaryError) {
-              return Center(child: Text('Ошибка: ${state.message}'));
-            } else if (state is DictionaryLoaded) {
-              if (state.words.isEmpty) {
-                return const Center(child: Text('Словарь пуст'));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Словарь'),
+        actions: [
+          BlocBuilder<DictionaryBloc, DictionaryState>(
+            builder: (context, state) {
+              if (state is DictionaryLoaded) {
+                return IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    showSearch(
+                      context: context,
+                      delegate: WordSearchDelegate(words: state.words),
+                    );
+                  },
+                );
               }
-              return ListView.builder(
-                itemCount: state.words.length,
-                itemBuilder: (context, index) => WordItem(
-                  word: state.words[index],
-                  onSpeak: () => _tts.speak(state.words[index].en),
-                ),
-              );
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
+      ),
+      body: BlocBuilder<DictionaryBloc, DictionaryState>(
+        builder: (context, state) {
+          if (state is DictionaryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is DictionaryError) {
+            return Center(child: Text('Ошибка: ${state.message}'));
+          } else if (state is DictionaryLoaded) {
+            if (state.words.isEmpty) {
+              return const Center(child: Text('Словарь пуст'));
             }
-            return const SizedBox.shrink();
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            final result = await showDialog(
-              context: context,
-              builder: (_) => AddWordDialog(),
+            return ListView.builder(
+              itemCount: state.words.length,
+              itemBuilder:
+                  (context, index) => WordItem(
+                    word: state.words[index],
+                    onSpeak: () => _tts.speak(state.words[index].en),
+                  ),
             );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await showDialog(
+            context: context,
+            builder: (_) => AddWordDialog(),
+          );
 
-            if (result != null && result is Word) {
-              context.read<DictionaryBloc>().add(AddNewWord(result));
-            }
-          },
-          tooltip: 'Добавить новое слово',
-          child: const Icon(Icons.add),
-        ),
+          if (result != null && result is Word) {
+            context.read<DictionaryBloc>().add(AddNewWord(result));
+          }
+        },
+        tooltip: 'Добавить новое слово',
+        child: const Icon(Icons.add),
       ),
     );
   }
