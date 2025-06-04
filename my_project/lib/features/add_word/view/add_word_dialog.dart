@@ -78,7 +78,6 @@ class _AddWordDialogState extends State<AddWordDialog> {
                 );
                 return;
               }
-
               final newWord = Word(
                 id: 0,
                 en: _enController.text,
