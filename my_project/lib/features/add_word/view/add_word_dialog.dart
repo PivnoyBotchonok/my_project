@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:my_project/data/models/word/word.dart';
+import 'package:my_project/data/repositories/word/word_repo.dart';
 
 class AddWordDialog extends StatefulWidget {
   const AddWordDialog({super.key});
@@ -65,10 +67,20 @@ class _AddWordDialogState extends State<AddWordDialog> {
           child: Text('Отмена'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             if (_formKey.currentState!.validate()) {
+              final wordRepo = context.read<WordRepository>();
+              final exists = await wordRepo.wordExists(_enController.text);
+
+              if (exists) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Это слово уже есть в словаре')),
+                );
+                return;
+              }
+
               final newWord = Word(
-                id: 0, // Генерируем уникальный ID
+                id: 0,
                 en: _enController.text,
                 ru: _ruController.text,
               );

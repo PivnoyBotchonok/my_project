@@ -66,6 +66,13 @@ class WordRepository {
     return _wordsBox!.values.toList();
   }
 
+  Future<bool> wordExists(String englishWord) async {
+    await initHive();
+    return _wordsBox!.values.any(
+      (w) => w.en.toLowerCase() == englishWord.toLowerCase(),
+    );
+  }
+
   Future<void> close() async {
     await _wordsBox?.close();
     await _configBox?.close();
