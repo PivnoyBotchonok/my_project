@@ -33,8 +33,8 @@ class CrosswordScreen extends StatelessWidget {
       create: (_) => CrosswordBloc(wordRepository: wordRepo),
       child: BlocBuilder<CrosswordBloc, CrosswordState>(
         builder: (context, state) {
-          Function? _revealCurrentCellLetter;
-          String _highlightedWordDescription = '';
+          Function? revealCurrentCellLetter;
+          String highlightedWordDescription = '';
 
           if (state is CrosswordLoading) {
             return const Scaffold(
@@ -74,7 +74,7 @@ class CrosswordScreen extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.help),
-                    onPressed: () => _revealCurrentCellLetter?.call(),
+                    onPressed: () => revealCurrentCellLetter?.call(),
                   ),
                   IconButton(
                     icon: const Icon(Icons.refresh),
@@ -93,7 +93,7 @@ class CrosswordScreen extends StatelessWidget {
                   words: state.crosswordData,
                   style: _style,
                   onRevealCurrentCellLetter: (fn) {
-                    _revealCurrentCellLetter = fn;
+                    revealCurrentCellLetter = fn;
                   },
                   onCrosswordCompleted: () async {
                     try {
@@ -127,9 +127,9 @@ class CrosswordScreen extends StatelessWidget {
                 ),
               ),
               bottomNavigationBar:
-                  _highlightedWordDescription.isNotEmpty
+                  highlightedWordDescription.isNotEmpty
                       ? CrosswordNavigationBar(
-                        description: _highlightedWordDescription,
+                        description: highlightedWordDescription,
                         onPrevious: () {},
                         onNext: () {},
                         style: _style,

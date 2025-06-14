@@ -13,23 +13,26 @@ class WordItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      color: theme.cardColor,  // цвет карточки из темы
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         title: Text(
           word.en,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             word.ru,
-            style: const TextStyle(fontStyle: FontStyle.italic),
+            style: theme.textTheme.bodyMedium?.copyWith(fontStyle: FontStyle.italic),
           ),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.volume_up),
+          icon: Icon(Icons.volume_up, color: theme.iconTheme.color),
           onPressed: onSpeak,
         ),
       ),

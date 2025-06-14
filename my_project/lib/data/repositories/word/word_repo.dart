@@ -44,7 +44,6 @@ class WordRepository {
       await _wordsBox!.clear();
       await _wordsBox!.putAll({for (var word in words) word.id: word});
     } catch (e) {
-      print('Error loading initial data: $e');
       await _configBox!.delete(_dataLoadedKey);
       rethrow;
     }

@@ -128,8 +128,9 @@ class _GameView extends StatelessWidget {
     final wrongColor = AppTheme.errorColor(brightness);
 
     if (state.selectedIndex == null) return baseColor;
-    if (index == state.correctOptionIndex && index == state.selectedIndex)
+    if (index == state.correctOptionIndex && index == state.selectedIndex) {
       return correctColor;
+    }
     if (state.wrongAttempts.contains(index)) return wrongColor;
     return baseColor;
   }

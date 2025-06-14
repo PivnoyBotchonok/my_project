@@ -42,50 +42,54 @@ class MainMenuScreen extends StatelessWidget {
             if (state is! ScoreLoaded) {
               return const Center(child: CircularProgressIndicator());
             }
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildMenuButton(
-                    context: context,
-                    label: 'Бесконечный \nрежим',
-                    onPressed: () async {
-                      await Navigator.of(context).pushNamed("/endless_game");
-                      context.read<ScoreBloc>().add(LoadScores());
-                    },
-                    badge: ScoreBadge(score: state.endlessScore),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildMenuButton(
-                    context: context,
-                    label: 'Кроссворд',
-                    onPressed: () async {
-                      await Navigator.of(context).pushNamed("/crossword");
-                      context.read<ScoreBloc>().add(LoadScores());
-                    },
-                    badge: ScoreBadge(
-                      score: state.crosswordScore,
-                      color: Colors.green,
+            return Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildMenuButton(
+                      context: context,
+                      label: 'Бесконечный \nрежим',
+                      onPressed: () async {
+                        await Navigator.of(context).pushNamed("/endless_game");
+                        // ignore: use_build_context_synchronously
+                        context.read<ScoreBloc>().add(LoadScores());
+                      },
+                      badge: ScoreBadge(score: state.endlessScore),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildMenuButton(
-                    context: context,
-                    label: 'Словарь',
-                    onPressed: () {
-                      Navigator.of(context).pushNamed("/dictionary");
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  _buildMenuButton(
-                    context: context,
-                    label: 'Сброс результатов',
-                    onPressed: () {
-                      context.read<ScoreBloc>().add(ResetScores());
-                    },
-                  ),
-                ],
+                    const SizedBox(height: 20),
+                    _buildMenuButton(
+                      context: context,
+                      label: 'Кроссворд',
+                      onPressed: () async {
+                        await Navigator.of(context).pushNamed("/crossword");
+                        // ignore: use_build_context_synchronously
+                        context.read<ScoreBloc>().add(LoadScores());
+                      },
+                      badge: ScoreBadge(
+                        score: state.crosswordScore,
+                        color: Colors.green,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildMenuButton(
+                      context: context,
+                      label: 'Словарь',
+                      onPressed: () {
+                        Navigator.of(context).pushNamed("/dictionary");
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildMenuButton(
+                      context: context,
+                      label: 'Сброс результатов',
+                      onPressed: () {
+                        context.read<ScoreBloc>().add(ResetScores());
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           },

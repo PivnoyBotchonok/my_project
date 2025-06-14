@@ -68,6 +68,7 @@ class DictionaryScreen extends StatelessWidget {
           );
 
           if (result != null && result is Word) {
+            // ignore: use_build_context_synchronously
             context.read<DictionaryBloc>().add(AddNewWord(result));
           }
         },

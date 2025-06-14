@@ -24,8 +24,15 @@ class _AddWordDialogState extends State<AddWordDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
     return AlertDialog(
-      title: Text('Добавить новое слово'),
+      backgroundColor: theme.dialogBackgroundColor,
+      title: Text(
+        'Добавить новое слово',
+        style: textTheme.titleLarge,
+      ),
       content: Form(
         key: _formKey,
         child: Column(
@@ -35,7 +42,26 @@ class _AddWordDialogState extends State<AddWordDialog> {
               controller: _enController,
               decoration: InputDecoration(
                 labelText: 'Английское слово',
-                border: OutlineInputBorder(),
+                labelStyle: textTheme.bodyMedium,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary.withOpacity(0.5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -43,13 +69,33 @@ class _AddWordDialogState extends State<AddWordDialog> {
                 }
                 return null;
               },
+              style: textTheme.bodyMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _ruController,
               decoration: InputDecoration(
                 labelText: 'Перевод на русский',
-                border: OutlineInputBorder(),
+                labelStyle: textTheme.bodyMedium,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary.withOpacity(0.5),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 2,
+                  ),
+                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -57,6 +103,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
                 }
                 return null;
               },
+              style: textTheme.bodyMedium,
             ),
           ],
         ),
@@ -64,7 +111,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text('Отмена'),
+          child: const Text('Отмена'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -73,8 +120,13 @@ class _AddWordDialogState extends State<AddWordDialog> {
               final exists = await wordRepo.wordExists(_enController.text);
 
               if (exists) {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Это слово уже есть в словаре')),
+                  SnackBar(
+                    content: const Text('Это слово уже есть в словаре'),
+                    backgroundColor: theme.colorScheme.error,
+                    behavior: SnackBarBehavior.floating,
+                  ),
                 );
                 return;
               }
@@ -83,10 +135,11 @@ class _AddWordDialogState extends State<AddWordDialog> {
                 en: _enController.text,
                 ru: _ruController.text,
               );
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop(newWord);
             }
           },
-          child: Text('Добавить'),
+          child: const Text('Добавить'),
         ),
       ],
     );

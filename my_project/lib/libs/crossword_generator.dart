@@ -1,4 +1,4 @@
-library crossword_generator;
+library;
 
 export 'src/crossword_generator_base.dart';
 export 'src/crossword_widget.dart';
