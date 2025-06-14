@@ -8,7 +8,7 @@ class CrosswordWidget extends StatefulWidget {
   final Function(Function) onRevealCurrentCellLetter;
   final VoidCallback? onCrosswordCompleted;
 
-  CrosswordWidget({
+  const CrosswordWidget({super.key, 
     required this.words,
     this.style = const CrosswordStyle(),
     required this.onRevealCurrentCellLetter,
@@ -16,6 +16,7 @@ class CrosswordWidget extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _CrosswordWidgetState createState() => _CrosswordWidgetState();
 }
 
@@ -26,7 +27,7 @@ class _CrosswordWidgetState extends State<CrosswordWidget> {
   int _selectedCol = -1;
   bool _isHorizontal = true;
   String _highlightedWordDescription = "";
-  Set<String> _revealedCells = {}; // New state variable
+  final Set<String> _revealedCells = {}; // New state variable
 
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _inputController = TextEditingController();
@@ -37,8 +38,10 @@ class _CrosswordWidgetState extends State<CrosswordWidget> {
     _inputController.addListener(_handleInput);
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
+        // ignore: deprecated_member_use
         RawKeyboard.instance.addListener(_handleKeyEvent);
       } else {
+        // ignore: deprecated_member_use
         RawKeyboard.instance.removeListener(_handleKeyEvent);
       }
     });
@@ -613,7 +616,9 @@ class _CrosswordWidgetState extends State<CrosswordWidget> {
     };
   }
 
+  // ignore: deprecated_member_use
   void _handleKeyEvent(RawKeyEvent event) {
+    // ignore: deprecated_member_use
     if (event is RawKeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.backspace) {
       setState(() {
@@ -686,6 +691,7 @@ class _CrosswordWidgetState extends State<CrosswordWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // ignore: deprecated_member_use
       body: WillPopScope(
         onWillPop: () async {
           if (_focusNode.hasFocus) {

@@ -13,6 +13,7 @@ class CrosswordGenerator {
     }
 
     if (temp < 0 || temp > 1) {
+      // ignore: avoid_print
       print("Error: $values");
     }
 
@@ -77,6 +78,7 @@ class CrosswordGenerator {
       }
       words[index]['orientation'] = "down";
     }
+    // ignore: avoid_print
     print("$word, $bestScore");
   }
 

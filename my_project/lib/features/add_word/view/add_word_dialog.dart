@@ -7,6 +7,7 @@ class AddWordDialog extends StatefulWidget {
   const AddWordDialog({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddWordDialogState createState() => _AddWordDialogState();
 }
 
@@ -28,6 +29,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
     final textTheme = theme.textTheme;
 
     return AlertDialog(
+      // ignore: deprecated_member_use
       backgroundColor: theme.dialogBackgroundColor,
       title: Text(
         'Добавить новое слово',
@@ -52,6 +54,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
+                    // ignore: deprecated_member_use
                     color: theme.colorScheme.primary.withOpacity(0.5),
                   ),
                 ),
@@ -86,6 +89,7 @@ class _AddWordDialogState extends State<AddWordDialog> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
+                    // ignore: deprecated_member_use
                     color: theme.colorScheme.primary.withOpacity(0.5),
                   ),
                 ),

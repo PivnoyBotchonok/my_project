@@ -15,10 +15,10 @@ class CrosswordStyle {
     this.wordCompleteColor = const Color.fromARGB(255, 255, 249, 196),
     this.cellTextStyle = const TextStyle(fontWeight: FontWeight.bold),
     this.descriptionButtonStyle = const ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(Colors.blue),
-      foregroundColor: MaterialStatePropertyAll(Colors.white),
-      padding: MaterialStatePropertyAll(EdgeInsets.all(16)),
-      shape: MaterialStatePropertyAll(CircleBorder()),
+      backgroundColor: WidgetStatePropertyAll(Colors.blue),
+      foregroundColor: WidgetStatePropertyAll(Colors.white),
+      padding: WidgetStatePropertyAll(EdgeInsets.all(16)),
+      shape: WidgetStatePropertyAll(CircleBorder()),
     ),
     this.cellBuilder,
   });
